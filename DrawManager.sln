@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrawManager.Api", "src\Draw
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "db", "db", "{490EBFFC-1A6B-46C6-A605-02BD1AACAC02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawManager.Api.IntegrationTests", "tests\DrawManager.Api.IntegrationTests\DrawManager.Api.IntegrationTests.csproj", "{A08756FC-7B60-486C-82D8-222B27659F21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrawManager.Api.IntegrationTests", "tests\DrawManager.Api.IntegrationTests\DrawManager.Api.IntegrationTests.csproj", "{A08756FC-7B60-486C-82D8-222B27659F21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
