@@ -7,8 +7,8 @@ namespace DrawManager.Api.Features.Prizes
     {
         public PrizeSelectionStepMappings()
         {
-            CreateMap<PrizeSelectionStep, PrizeSelectionStepEnvelope>(MemberList.None)
-                .ForMember(psse => psse.PrizeSelectionStepType, o => o.MapFrom(pss => pss.PriceSelectionStepType));
+            CreateMap<PrizeSelectionStep, PrizeSelectionStepEnvelope>(MemberList.None);
+                //.ForMember(psse => psse.PrizeSelectionStepType, o => o.MapFrom(pss => pss.PrizeSelectionStepType));
         }
     }
 }

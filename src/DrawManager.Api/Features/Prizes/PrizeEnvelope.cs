@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DrawManager.Api.Features.Prizes
 {
@@ -8,6 +9,7 @@ namespace DrawManager.Api.Features.Prizes
         public string Name { get; set; }
         public string Description { get; set; }
         public int AttemptsUntilChooseWinner { get; set; }
+        public DateTime? ExecutedOn { get; set; }
         public int DrawId { get; set; }
 
         public bool Delivered { get; set; }

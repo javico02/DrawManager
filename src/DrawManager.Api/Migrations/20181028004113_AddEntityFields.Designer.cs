@@ -4,14 +4,16 @@ using DrawManager.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DrawManager.Api.Migrations
 {
     [DbContext(typeof(DrawManagerDbContext))]
-    partial class DrawManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181028004113_AddEntityFields")]
+    partial class AddEntityFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

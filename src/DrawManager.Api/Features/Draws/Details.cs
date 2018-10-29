@@ -49,6 +49,7 @@ namespace DrawManager.Api.Features.Draws
                 var draw = await _context
                     .Draws
                     .Include(d => d.Prizes)
+                    .Include(d => d.Entries)
                     .AsNoTracking()
                     .FirstOrDefaultAsync(d => d.Id == request.DrawId, cancellationToken);
 

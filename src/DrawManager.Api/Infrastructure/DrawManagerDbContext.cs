@@ -23,19 +23,6 @@ namespace DrawManager.Api.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DrawEntry>(b =>
-            {
-                b.HasKey(de => new { de.DrawId, de.EntrantId });
-
-                b.HasOne(de => de.Draw)
-                .WithMany(d => d.Entries)
-                .HasForeignKey(de => de.DrawId);
-
-                b.HasOne(de => de.Entrant)
-                .WithMany(e => e.Entries)
-                .HasForeignKey(de => de.EntrantId);
-            });
-
             modelBuilder.Entity<PrizeSelectionStep>(b =>
             {
                 b.HasKey(pss => new { pss.PrizeId, pss.EntrantId });

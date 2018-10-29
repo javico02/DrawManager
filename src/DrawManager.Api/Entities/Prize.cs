@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DrawManager.Api.Entities
@@ -9,9 +10,10 @@ namespace DrawManager.Api.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public int AttemptsUntilChooseWinner { get; set; }
+        public DateTime? ExecutedOn { get; set; }
         public int DrawId { get; set; }
 
-        public bool Delivered => SelectionSteps.Count == AttemptsUntilChooseWinner + 1 && SelectionSteps.Any(st => st.PriceSelectionStepType == PrizeSelectionStepType.Winner);
+        public bool Delivered => SelectionSteps.Count == AttemptsUntilChooseWinner + 1 && SelectionSteps.Any(st => st.PrizeSelectionStepType == PrizeSelectionStepType.Winner);
 
         public Draw Draw { get; set; }
         public List<PrizeSelectionStep> SelectionSteps { get; set; }

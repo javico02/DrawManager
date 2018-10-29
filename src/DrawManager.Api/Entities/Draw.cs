@@ -8,10 +8,13 @@ namespace DrawManager.Api.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool AllowMultipleParticipations { get; set; }
         public DateTime ProgrammedFor { get; set; }
         public DateTime? ExecutedOn { get; set; }
 
-        public int PrizesQty => Prizes?.Count ?? 0;
+        public int PrizesQty => Prizes.Count;
+        public int EntriesQty => Entries.Count;
+        public bool IsCompleted => Prizes.Count > 0 && Prizes.TrueForAll(p => p.Delivered);
 
         public List<Prize> Prizes { get; set; }
         public List<DrawEntry> Entries { get; set; }

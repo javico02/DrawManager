@@ -41,6 +41,7 @@ namespace DrawManager.Api.Features.Draws
                 var draws = await _context
                     .Draws
                     .Include(d => d.Prizes)
+                    .Include(d => d.Entries)
                     .Where(d => !d.ExecutedOn.HasValue)
                     .Skip(request.Offset ?? 0)
                     .Take(request.Limit ?? 10)

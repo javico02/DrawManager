@@ -18,6 +18,7 @@ namespace DrawManager.Api.Features.Draws
         {
             public string Name { get; set; }
             public string Description { get; set; }
+            public bool AllowMultipleParticipations { get; set; }
             public DateTime ProgrammedFor { get; set; }
         }
 
@@ -62,6 +63,7 @@ namespace DrawManager.Api.Features.Draws
                 {
                     Name = request.DrawData.Name,
                     Description = request.DrawData.Description,
+                    AllowMultipleParticipations = request.DrawData.AllowMultipleParticipations,
                     ProgrammedFor = request.DrawData.ProgrammedFor
                 };
 
