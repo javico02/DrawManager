@@ -4,6 +4,7 @@ using DrawManager.Api.Infrastructure;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,14 +50,26 @@ namespace DrawManager.Api.Features.Draws
                 var draw = await _context
                     .Draws
                     .Include(d => d.Prizes)
+                        .ThenInclude(p => p.SelectionSteps)
                     .Include(d => d.Entries)
-                    .AsNoTracking()
                     .FirstOrDefaultAsync(d => d.Id == request.DrawId, cancellationToken);
 
                 // Validations
                 if (draw == null)
                 {
                     throw new RestException(HttpStatusCode.NotFound, new { Error = $"El sorteo con el id '{ request.DrawId }' no existe." });
+                }
+
+                // Loading entrant info 
+                var allPrizeSelectionSteps = draw
+                    .Prizes
+                    .SelectMany(p => p.SelectionSteps);
+                foreach (var pss in allPrizeSelectionSteps)
+                {
+                    await _context
+                        .Entry(pss)
+                        .Reference(p => p.Entrant)
+                        .LoadAsync();
                 }
 
                 // Mapping

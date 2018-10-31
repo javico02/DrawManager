@@ -28,9 +28,12 @@ namespace DrawManager.Api.Features.Draws
         }
 
         [HttpPost]
-        public async Task<DrawEnvelope> Create([FromBody]Create.Command command)
+        public async Task<DrawEnvelope> Create([FromBody]Create.DrawData drawData)
         {
-            return await _mediator.Send(command);
+            return await _mediator.Send(new Create.Command
+            {
+                DrawData = drawData
+            });
         }
 
         [HttpDelete("{id}")]

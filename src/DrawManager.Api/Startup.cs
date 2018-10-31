@@ -89,6 +89,7 @@ namespace DrawManager
             services.AddAutoMapper(GetType().Assembly);
 
             // Registering services
+            services.AddScoped<IRandomSelector, RandomSelector>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();

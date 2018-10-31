@@ -22,10 +22,12 @@ namespace DrawManager.Api.Features.Prizes
         }
 
         [HttpPost("{id}/prizes")]
-        public async Task<PrizeEnvelope> Create([FromRoute]int id, [FromBody]Create.Command command)
+        public async Task<PrizeEnvelope> Create([FromRoute]int id, [FromBody]Create.PrizeData prizeData)
         {
-            command.DrawId = id;
-            return await _mediator.Send(command);
+            return await _mediator.Send(new Create.Command {
+                DrawId = id,
+                Prize = prizeData
+            });
         }
 
         [HttpDelete("{id}/prizes/{prizeId}")]

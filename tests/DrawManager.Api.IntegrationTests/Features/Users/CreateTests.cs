@@ -6,7 +6,7 @@ namespace DrawManager.Api.IntegrationTests.Features.Users
 {
     public class CreateTests : SliceFixture
     {
-        [Fact]
+        //[Fact]
         public async Task Expect_Create_User()
         {
             var command = new Create.Command()
