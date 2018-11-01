@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DrawManager.Api.Entities;
 
-namespace DrawManager.Api.Features.Prizes
+namespace DrawManager.Api.Features.PrizeSelectionSteps
 {
     public class PrizeSelectionStepMappings : Profile
     {
