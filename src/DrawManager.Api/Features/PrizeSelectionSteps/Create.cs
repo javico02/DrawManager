@@ -45,7 +45,7 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
 
             public async Task<PrizeSelectionStepEnvelope> Handle(Command request, CancellationToken cancellationToken)
             {
-                // Getting the parent prize & your prizes selection steps
+                // Getting the parent prize & prizes selection steps
                 var prize = await _context
                     .Prizes
                     .Include(p => p.Draw)
@@ -59,6 +59,7 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                 }
 
                 // If prize was delivered, then it is removed the winner existent step for creating a new one
+                int removedEntrantId = -1;
                 if (prize.Delivered)
                 {
                     // Getting winner step
@@ -69,36 +70,61 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                     if (winnerStep == null)
                         throw new RestException(HttpStatusCode.BadRequest, new { Error = $"El premio con nombre '{ prize.Name }' ya ha sido entregado pero no existe paso ganador." });
 
+                    // Getting entrant id for winner step to remove
+                    removedEntrantId = winnerStep.EntrantId;
+
                     // Deleting winner step
                     _context.PrizeSelectionSteps.Remove(winnerStep);
                     await _context.SaveChangesAsync(cancellationToken);
                 }
 
                 // Selecting loser steps inside prize
-                var previousLosers = prize
+                var previousLoserSteps = prize
                     .SelectionSteps
                     .Where(st => st.PrizeSelectionStepType == PrizeSelectionStepType.Loser)
                     .ToList();
 
-                // Getting all entrants for the draw & prize excluding the losers steps
-                // TODO: Get all winner steps from previous draws except from the car draw for excluding.
-                var allEntrantsExcludingLosers = await _context
+                // Selecting all winners from all prizes that belongs to draw's same group.
+                var previousWinnerSteps = await _context
+                    .PrizeSelectionSteps
+                    .Include(pss => pss.Prize)
+                        .ThenInclude(p => p.Draw)
+                    .Include(pss => pss.Entrant)
+                    .Where(pss => pss.PrizeSelectionStepType == PrizeSelectionStepType.Winner && pss.Prize.Draw.GroupName == prize.Draw.GroupName)
+                    .ToListAsync(cancellationToken);
+
+                // Getting all entries for the draw & prize, excluding the losers steps for the current prize, the prize's winners from others draws that belongs to the same group and the removed entrant id
+                var allEntries = await _context
                     .DrawEntries
                     .Include(de => de.Entrant)
-                    .Where(de => de.DrawId == prize.DrawId && previousLosers.All(l => l.EntrantId != de.EntrantId))
-                    .ToListAsync();
+                    .Where(de => de.DrawId == prize.DrawId
+                                && removedEntrantId != de.EntrantId
+                                && previousLoserSteps.All(l => l.EntrantId != de.EntrantId)
+                                && previousWinnerSteps.All(w => w.EntrantId != de.EntrantId))
+                    .ToListAsync(cancellationToken);
+
+                // Validating the existence of entrants for the draw.
+                if (allEntries.Count == 0)
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Error = $"No existen participantes disponibles en el sorteo '{ prize.Draw.Name }' para seleccionar un ganador." });
+                }
 
                 // Selecting entry
-                var drawEntry = _randomSelector
-                    .TakeRandom(allEntrantsExcludingLosers, 1, allEntrantsExcludingLosers.Count)
-                    .Single();
+                var selectedEntry = _randomSelector
+                    .TakeRandom(allEntries, 1, allEntries.Count)
+                    .SingleOrDefault();
+
+                if (selectedEntry == null)
+                {
+                    throw new RestException(HttpStatusCode.NotFound, new { Error = "No fue seleccionado ninguna participación." });
+                }
 
                 // Creating prize
                 var prizeSelectionStep = new PrizeSelectionStep
                 {
                     PrizeId = prize.Id,
-                    EntrantId = drawEntry.EntrantId,
-                    PrizeSelectionStepType = (previousLosers.Count < prize.AttemptsUntilChooseWinner)
+                    EntrantId = selectedEntry.EntrantId,
+                    PrizeSelectionStepType = (previousLoserSteps.Count < prize.AttemptsUntilChooseWinner)
                                                 ? PrizeSelectionStepType.Loser
                                                 : PrizeSelectionStepType.Winner,
                     RegisteredOn = DateTime.Now,

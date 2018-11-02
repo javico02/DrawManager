@@ -10,6 +10,7 @@ namespace DrawManager.Api.Features.Draws
         public bool AllowMultipleParticipations { get; set; }
         public DateTime ProgrammedFor { get; set; }
         public DateTime? ExecutedOn { get; set; }
+        public string GroupName { get; set; }
 
         public int PrizesQty { get; set; }
         public int EntriesQty { get; set; }

@@ -20,6 +20,7 @@ namespace DrawManager.Api.Features.Draws
             public string Description { get; set; }
             public bool AllowMultipleParticipations { get; set; }
             public DateTime ProgrammedFor { get; set; }
+            public string GroupName { get; set; }
         }
 
         public class Command : IRequest<DrawEnvelope>
@@ -64,7 +65,8 @@ namespace DrawManager.Api.Features.Draws
                     Name = request.DrawData.Name,
                     Description = request.DrawData.Description,
                     AllowMultipleParticipations = request.DrawData.AllowMultipleParticipations,
-                    ProgrammedFor = request.DrawData.ProgrammedFor
+                    ProgrammedFor = request.DrawData.ProgrammedFor,
+                    GroupName = request.DrawData.GroupName
                 };
 
                 // Saving
