@@ -52,10 +52,16 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                     .Include(p => p.SelectionSteps)
                     .FirstOrDefaultAsync(d => d.Id == request.PrizeId, cancellationToken);
 
-                // Validations
+                // Validating prize's existence
                 if (prize == null)
                 {
                     throw new RestException(HttpStatusCode.NotFound, new { Error = $"El premio con id '{ request.PrizeId}' no existe." });
+                }
+
+                // Validating if the draw is already closed.
+                if (prize.Draw.ExecutedOn.HasValue)
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Error = $"El sorteo '{ prize.Draw.Name }' se encuentra cerrado desde el { prize.Draw.ExecutedOn }." });
                 }
 
                 // If prize was delivered, then it is removed the winner existent step for creating a new one
@@ -114,6 +120,7 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                     .TakeRandom(allEntries, 1, allEntries.Count)
                     .SingleOrDefault();
 
+                // Validating entry's selection existence
                 if (selectedEntry == null)
                 {
                     throw new RestException(HttpStatusCode.NotFound, new { Error = "No fue seleccionado ninguna participación." });
@@ -134,22 +141,6 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                 if (prizeSelectionStep.PrizeSelectionStepType == PrizeSelectionStepType.Winner)
                 {
                     prize.ExecutedOn = DateTime.Now;
-
-                    // Loading all draw info
-                    var draw = await _context
-                    .Draws
-                    .Include(d => d.Prizes)
-                        .ThenInclude(p => p.SelectionSteps)
-                    .FirstOrDefaultAsync(d => d.Id == prize.DrawId, cancellationToken);
-
-                    // Updating 
-                    var mustBeCompleted = draw
-                        .Prizes
-                        .Where(p => p.Id != prize.Id)
-                        .All(p => p.Delivered);
-
-                    if (mustBeCompleted)
-                        draw.ExecutedOn = DateTime.Now;
                 }
 
                 // Saving

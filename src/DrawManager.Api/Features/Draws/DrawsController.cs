@@ -41,5 +41,11 @@ namespace DrawManager.Api.Features.Draws
         {
             await _mediator.Send(new Delete.Command(id));
         }
+
+        [HttpPut("{id}")]
+        public async Task<DrawEnvelope> Close([FromRoute]int id)
+        {
+            return await _mediator.Send(new Close.Command(id));
+        }
     }
 }
