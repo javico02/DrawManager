@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  api:
+    image: draw_manager_api:runtime
+    build: 
+      context: .
+      dockerfile: src/DrawManager.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+    ports:
+      - '5000:80'

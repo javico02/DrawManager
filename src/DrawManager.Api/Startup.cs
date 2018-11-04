@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
 
 namespace DrawManager
 {
@@ -33,9 +34,10 @@ namespace DrawManager
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
             // Registering database context
-            var dbConnString = Configuration.GetConnectionString(DrawManagerApiWellKnownConstants.DB_CONNECTIONSTRING_KEY);
+            var dbConnString = Environment.GetEnvironmentVariable(DrawManagerApiWellKnownConstants.DB_CONNECTIONSTRING_KEY)
+                ?? Configuration.GetConnectionString(DrawManagerApiWellKnownConstants.DB_CONNECTIONSTRING_KEY);
             services
-                .AddDbContext<DrawManagerDbContext>(options => options.UseSqlServer(dbConnString));
+                .AddDbContext<DrawManagerDbContext>(options => options.UseSqlite(dbConnString));
 
             // Registering swagger options
             var swaggerVersion = Configuration[DrawManagerApiWellKnownConstants.SWAGGER_VERSION_KEY];

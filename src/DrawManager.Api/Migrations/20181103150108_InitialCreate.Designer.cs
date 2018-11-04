@@ -3,35 +3,33 @@ using System;
 using DrawManager.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DrawManager.Api.Migrations
 {
     [DbContext(typeof(DrawManagerDbContext))]
-    [Migration("20181028004113_AddEntityFields")]
-    partial class AddEntityFields
+    [Migration("20181103150108_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
             modelBuilder.Entity("DrawManager.Api.Entities.Draw", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("AllowMultipleParticipations");
 
                     b.Property<string>("Description");
 
                     b.Property<DateTime?>("ExecutedOn");
+
+                    b.Property<string>("GroupName");
 
                     b.Property<string>("Name");
 
@@ -45,8 +43,7 @@ namespace DrawManager.Api.Migrations
             modelBuilder.Entity("DrawManager.Api.Entities.DrawEntry", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("DrawId");
 
@@ -66,12 +63,27 @@ namespace DrawManager.Api.Migrations
             modelBuilder.Entity("DrawManager.Api.Entities.Entrant", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("BranchOffice");
+
+                    b.Property<string>("City");
 
                     b.Property<string>("Code");
 
+                    b.Property<string>("Department");
+
                     b.Property<string>("Name");
+
+                    b.Property<string>("Office");
+
+                    b.Property<string>("Region");
+
+                    b.Property<string>("SubDepartment");
+
+                    b.Property<string>("Subsidiary");
+
+                    b.Property<string>("Unit");
 
                     b.HasKey("Id");
 
@@ -81,8 +93,7 @@ namespace DrawManager.Api.Migrations
             modelBuilder.Entity("DrawManager.Api.Entities.Prize", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("AttemptsUntilChooseWinner");
 
@@ -121,8 +132,7 @@ namespace DrawManager.Api.Migrations
             modelBuilder.Entity("DrawManager.Api.Entities.User", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("Hash");
 

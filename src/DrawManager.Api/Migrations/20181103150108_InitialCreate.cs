@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DrawManager.Api.Migrations
@@ -13,11 +12,13 @@ namespace DrawManager.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
+                    AllowMultipleParticipations = table.Column<bool>(nullable: false),
                     ProgrammedFor = table.Column<DateTime>(nullable: false),
-                    ExecutedOn = table.Column<DateTime>(nullable: true)
+                    ExecutedOn = table.Column<DateTime>(nullable: true),
+                    GroupName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,9 +30,17 @@ namespace DrawManager.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Code = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Subsidiary = table.Column<string>(nullable: true),
+                    Office = table.Column<string>(nullable: true),
+                    Unit = table.Column<string>(nullable: true),
+                    Department = table.Column<string>(nullable: true),
+                    SubDepartment = table.Column<string>(nullable: true),
+                    Region = table.Column<string>(nullable: true),
+                    City = table.Column<string>(nullable: true),
+                    BranchOffice = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,7 +52,7 @@ namespace DrawManager.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Login = table.Column<string>(nullable: true),
                     Hash = table.Column<byte[]>(nullable: true),
                     Salt = table.Column<byte[]>(nullable: true)
@@ -58,11 +67,12 @@ namespace DrawManager.Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    DrawId = table.Column<int>(nullable: false),
-                    AttemptsUntilChooseWinner = table.Column<int>(nullable: false)
+                    AttemptsUntilChooseWinner = table.Column<int>(nullable: false),
+                    ExecutedOn = table.Column<DateTime>(nullable: true),
+                    DrawId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,13 +89,15 @@ namespace DrawManager.Api.Migrations
                 name: "DrawEntries",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     DrawId = table.Column<int>(nullable: false),
                     EntrantId = table.Column<int>(nullable: false),
                     RegisteredOn = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DrawEntries", x => new { x.DrawId, x.EntrantId });
+                    table.PrimaryKey("PK_DrawEntries", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DrawEntries_Draws_DrawId",
                         column: x => x.DrawId,
@@ -107,7 +119,7 @@ namespace DrawManager.Api.Migrations
                     PrizeId = table.Column<int>(nullable: false),
                     EntrantId = table.Column<int>(nullable: false),
                     RegisteredOn = table.Column<DateTime>(nullable: false),
-                    PriceSelectionStepType = table.Column<int>(nullable: false)
+                    PrizeSelectionStepType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,6 +137,11 @@ namespace DrawManager.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DrawEntries_DrawId",
+                table: "DrawEntries",
+                column: "DrawId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DrawEntries_EntrantId",

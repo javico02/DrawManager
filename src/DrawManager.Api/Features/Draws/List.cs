@@ -52,7 +52,7 @@ namespace DrawManager.Api.Features.Draws
                 return new DrawsEnvelope
                 {
                     Draws = _mapper.Map<List<Draw>, List<DrawEnvelope>>(draws),
-                    DrawsCount = await _context.Draws.CountAsync(d => !d.ExecutedOn.HasValue, cancellationToken)
+                    DrawsCount = await _context.Draws.CountAsync()//d => !d.ExecutedOn.HasValue, cancellationToken)
                 };
             }
         }
