@@ -1,9 +1,9 @@
 # Runtime image
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-nanoserver-1803 AS base
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-nanoserver-1709 AS base
 WORKDIR /app
 
 # Building image
-FROM microsoft/dotnet:2.1-sdk-nanoserver-1803 AS build
+FROM microsoft/dotnet:2.1-sdk-nanoserver-1709 AS build
 WORKDIR /src
 
 # Restoring
