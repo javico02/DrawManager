@@ -47,17 +47,6 @@ namespace DrawManager
             services
                 .AddSwaggerGen(x =>
                 {
-                    //x.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                    //{
-                    //    In = "header",
-                    //    Description = "Please insert JWT with Bearer into field",
-                    //    Name = "Authorization",
-                    //    Type = "apiKey"
-                    //});
-                    //x.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-                    //{
-                    //    { "Bearer", new string[] { } }
-                    //});
                     x.SwaggerDoc(swaggerVersion, new Info
                     {
                         Title = swaggerTitle,
