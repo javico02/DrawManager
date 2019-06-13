@@ -16,7 +16,6 @@ namespace DrawManager.Api.Entities
         /// Nombre y Apellidos del concursante.
         /// </summary>
         public string Name { get; set; }
-
         /// <summary>
         /// Sucursal 1
         /// </summary>
@@ -50,7 +49,13 @@ namespace DrawManager.Api.Entities
         /// </summary>
         public string BranchOffice { get; set; }
 
+        /// <summary>
+        /// Participaciones.
+        /// </summary>
         public List<DrawEntry> Entries { get; set; }
+        /// <summary>
+        /// Pasos de selección.
+        /// </summary>
         public List<PrizeSelectionStep> SelectionSteps { get; set; }
 
         public Entrant()

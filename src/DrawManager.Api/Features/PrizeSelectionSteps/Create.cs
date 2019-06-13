@@ -126,11 +126,12 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                     throw new RestException(HttpStatusCode.NotFound, new { Error = "No fue seleccionado ninguna participación." });
                 }
 
-                // Creating prize
+                // Creating prize selection step
                 var prizeSelectionStep = new PrizeSelectionStep
                 {
                     PrizeId = prize.Id,
                     EntrantId = selectedEntry.EntrantId,
+                    DrawEntryId = selectedEntry.Id,
                     PrizeSelectionStepType = (previousLoserSteps.Count < prize.AttemptsUntilChooseWinner)
                                                 ? PrizeSelectionStepType.Loser
                                                 : PrizeSelectionStepType.Winner,

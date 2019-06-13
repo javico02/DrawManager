@@ -23,17 +23,46 @@ namespace DrawManager.Api.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PrizeSelectionStep>(b =>
+            modelBuilder.Entity<Prize>(prize =>
             {
-                b.HasKey(pss => new { pss.PrizeId, pss.EntrantId });
+                prize
+                    .HasOne(p => p.Draw)
+                    .WithMany(d => d.Prizes)
+                    .HasForeignKey(p => p.DrawId);
+            });
 
-                b.HasOne(pss => pss.Prize)
-                .WithMany(p => p.SelectionSteps)
-                .HasForeignKey(pss => pss.PrizeId);
+            modelBuilder.Entity<DrawEntry>(drawEntry =>
+            {
+                drawEntry
+                    .HasOne(de => de.Entrant)
+                    .WithMany(e => e.Entries)
+                    .HasForeignKey(de => de.EntrantId);
 
-                b.HasOne(pss => pss.Entrant)
-                .WithMany(e => e.SelectionSteps)
-                .HasForeignKey(pss => pss.EntrantId);
+                drawEntry
+                    .HasOne(de => de.Draw)
+                    .WithMany(d => d.Entries)
+                    .HasForeignKey(de => de.DrawId);
+            });
+
+            modelBuilder.Entity<PrizeSelectionStep>(prizeSelectionStep =>
+            {
+                prizeSelectionStep
+                    .HasKey(pss => new { pss.PrizeId, pss.EntrantId, pss.DrawEntryId });
+
+                prizeSelectionStep
+                    .HasOne(pss => pss.Prize)
+                    .WithMany(p => p.SelectionSteps)
+                    .HasForeignKey(pss => pss.PrizeId);
+
+                prizeSelectionStep
+                    .HasOne(pss => pss.Entrant)
+                    .WithMany(e => e.SelectionSteps)
+                    .HasForeignKey(pss => pss.EntrantId);
+
+                prizeSelectionStep
+                   .HasOne(pss => pss.DrawEntry)
+                   .WithMany(de => de.SelectionSteps)
+                   .HasForeignKey(pss => pss.DrawEntryId);
             });
         }
     }
