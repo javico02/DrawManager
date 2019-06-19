@@ -1,10 +1,20 @@
 ﻿using DrawManager.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DrawManager.Api.Infrastructure
 {
     public class DrawManagerDbContext : DbContext
     {
+        private static readonly Func<DrawManagerDbContext, int, IEnumerable<DrawEntry>> _getEntriesByDrawExcludingPreviousWinnersAndLosers = EF.CompileQuery((DrawManagerDbContext context, int drawId) => context
+                .DrawEntries
+                .AsNoTracking()
+                .Where(de => de.DrawId == drawId)
+                .Select(de => new DrawEntry { Id = de.Id, EntrantId = de.EntrantId })
+                );
+
         public DrawManagerDbContext()
         { }
 
@@ -17,6 +27,11 @@ namespace DrawManager.Api.Infrastructure
         public DbSet<Entrant> Entrants { get; set; }
         public DbSet<DrawEntry> DrawEntries { get; set; }
         public DbSet<PrizeSelectionStep> PrizeSelectionSteps { get; set; }
+
+        public IEnumerable<DrawEntry> GetEntriesByDrawExcludingPreviousWinnersAndLosers(int drawId)
+        {
+            return _getEntriesByDrawExcludingPreviousWinnersAndLosers(this, drawId);
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { }
@@ -31,8 +46,19 @@ namespace DrawManager.Api.Infrastructure
                     .HasForeignKey(p => p.DrawId);
             });
 
+            modelBuilder.Entity<Entrant>(entrant =>
+            {
+                entrant.
+                    HasIndex(e => e.Id)
+                    .IsUnique();
+            });
+
             modelBuilder.Entity<DrawEntry>(drawEntry =>
             {
+                drawEntry
+                    .HasIndex(de => de.Id)
+                    .IsUnique();
+
                 drawEntry
                     .HasOne(de => de.Entrant)
                     .WithMany(e => e.Entries)
