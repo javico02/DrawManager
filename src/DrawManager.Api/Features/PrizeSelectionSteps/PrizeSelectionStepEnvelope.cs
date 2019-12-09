@@ -7,6 +7,7 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
     {
         public int PrizeId { get; set; }
         public int EntrantId { get; set; }
+        public int DrawEntryId { get; set; }
         public DateTime RegisteredOn { get; set; }
         public PrizeSelectionStepType PrizeSelectionStepType { get; set; }
 
