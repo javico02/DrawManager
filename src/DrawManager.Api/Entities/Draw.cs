@@ -47,7 +47,13 @@ namespace DrawManager.Api.Entities
         /// </summary>
         public bool IsCompleted => Prizes.Count > 0 && Prizes.TrueForAll(p => p.Delivered);
 
+        /// <summary>
+        /// Premios.
+        /// </summary>
         public List<Prize> Prizes { get; set; }
+        /// <summary>
+        /// Participaciones.
+        /// </summary>
         public List<DrawEntry> Entries { get; set; }
 
         public Draw()

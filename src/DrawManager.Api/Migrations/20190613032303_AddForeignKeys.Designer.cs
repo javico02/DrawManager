@@ -3,14 +3,16 @@ using System;
 using DrawManager.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DrawManager.Api.Migrations
 {
     [DbContext(typeof(DrawManagerDbContext))]
-    partial class DrawManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190613032303_AddForeignKeys")]
+    partial class AddForeignKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,9 +57,6 @@ namespace DrawManager.Api.Migrations
 
                     b.HasIndex("EntrantId");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
                     b.ToTable("DrawEntries");
                 });
 
@@ -87,9 +86,6 @@ namespace DrawManager.Api.Migrations
                     b.Property<string>("Unit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.ToTable("Entrants");
                 });

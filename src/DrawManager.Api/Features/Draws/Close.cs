@@ -51,7 +51,6 @@ namespace DrawManager.Api.Features.Draws
                     .Draws
                     .Include(d => d.Prizes)
                         .ThenInclude(p => p.SelectionSteps)
-                    .Include(d => d.Entries)
                     .FirstOrDefaultAsync(d => d.Id == request.DrawId, cancellationToken);
 
                 // Validations
@@ -79,6 +78,10 @@ namespace DrawManager.Api.Features.Draws
 
                 // Mapping
                 var drawEnvelope = _mappper.Map<Draw, DrawEnvelope>(draw);
+
+                // Getting quantity of entries for the draw.
+                drawEnvelope.EntriesQty = await _context.DrawEntries.CountAsync(de => de.DrawId == drawEnvelope.Id, cancellationToken);
+
                 return drawEnvelope;
             }
         }

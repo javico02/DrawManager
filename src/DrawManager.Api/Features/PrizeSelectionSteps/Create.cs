@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DrawManager.Api.Entities;
-using DrawManager.Api.Features.Prizes;
 using DrawManager.Api.Infrastructure;
 using FluentValidation;
 using MediatR;
@@ -99,25 +98,35 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                     .Where(pss => pss.PrizeSelectionStepType == PrizeSelectionStepType.Winner && pss.Prize.Draw.GroupName == prize.Draw.GroupName)
                     .ToListAsync(cancellationToken);
 
-                // Getting all entries for the draw & prize, excluding the losers steps for the current prize, the prize's winners from others draws that belongs to the same group and the removed entrant id
-                var allEntries = await _context
-                    .DrawEntries
-                    .Include(de => de.Entrant)
-                    .Where(de => de.DrawId == prize.DrawId
-                                && removedEntrantId != de.EntrantId
-                                && previousLoserSteps.All(l => l.EntrantId != de.EntrantId)
-                                && previousWinnerSteps.All(w => w.EntrantId != de.EntrantId))
-                    .ToListAsync(cancellationToken);
+                // Getting all entries for the draw & prize.
+                var allEntries = _context
+                    .GetEntriesByDrawExcludingPreviousWinnersAndLosers(prize.DrawId);
+
+                // Excluding the losers steps for the current prize, the prize's winners from others draws that belongs to the same group and the removed entrant id
+                var entries = removedEntrantId ==- -1 
+                    ? allEntries
+                        .Where(de =>
+                            previousLoserSteps.All(l => l.EntrantId != de.EntrantId)
+                            && previousWinnerSteps.All(w => w.EntrantId != de.EntrantId)
+                        )
+                        .ToList()
+                    : allEntries
+                        .Where(de =>
+                            removedEntrantId != de.EntrantId
+                            && previousLoserSteps.All(l => l.EntrantId != de.EntrantId)
+                            && previousWinnerSteps.All(w => w.EntrantId != de.EntrantId)
+                        )
+                        .ToList();
 
                 // Validating the existence of entrants for the draw.
-                if (allEntries.Count == 0)
+                if (entries.Count == 0)
                 {
                     throw new RestException(HttpStatusCode.BadRequest, new { Error = $"No existen participantes disponibles en el sorteo '{ prize.Draw.Name }' para seleccionar un ganador." });
                 }
 
-                // Selecting entry
+                // Selecting winner entry
                 var selectedEntry = _randomSelector
-                    .TakeRandom(allEntries, 1, allEntries.Count)
+                    .TakeRandom(entries, 1, entries.Count)
                     .SingleOrDefault();
 
                 // Validating entry's selection existence
@@ -126,11 +135,18 @@ namespace DrawManager.Api.Features.PrizeSelectionSteps
                     throw new RestException(HttpStatusCode.NotFound, new { Error = "No fue seleccionado ninguna participación." });
                 }
 
-                // Creating prize
+                // Getting the whole info of the winner entry
+                var winnerEntry = _context
+                    .DrawEntries
+                    .Include(de => de.Entrant)
+                    .SingleOrDefault(de => de.Id == selectedEntry.Id);
+
+                // Creating prize selection step
                 var prizeSelectionStep = new PrizeSelectionStep
                 {
                     PrizeId = prize.Id,
-                    EntrantId = selectedEntry.EntrantId,
+                    EntrantId = winnerEntry.EntrantId,
+                    DrawEntryId = winnerEntry.Id,
                     PrizeSelectionStepType = (previousLoserSteps.Count < prize.AttemptsUntilChooseWinner)
                                                 ? PrizeSelectionStepType.Loser
                                                 : PrizeSelectionStepType.Winner,

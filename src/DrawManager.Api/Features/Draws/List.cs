@@ -41,19 +41,25 @@ namespace DrawManager.Api.Features.Draws
                 var draws = await _context
                     .Draws
                     .Include(d => d.Prizes)
-                    .Include(d => d.Entries)
-                    //.Where(d => !d.ExecutedOn.HasValue)
                     .Skip(request.Offset ?? 0)
                     .Take(request.Limit ?? 10)
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
 
                 // Mapping
-                return new DrawsEnvelope
+                var drawsEnvelope = new DrawsEnvelope
                 {
                     Draws = _mapper.Map<List<Draw>, List<DrawEnvelope>>(draws),
-                    DrawsCount = await _context.Draws.CountAsync()//d => !d.ExecutedOn.HasValue, cancellationToken)
+                    DrawsCount = await _context.Draws.CountAsync() //d => !d.ExecutedOn.HasValue, cancellationToken)
                 };
+
+                // Getting quantity of entries by draw.
+                foreach (var drawEnvelope in drawsEnvelope.Draws)
+                {
+                    drawEnvelope.EntriesQty = await _context.DrawEntries.CountAsync(de => de.DrawId == drawEnvelope.Id, cancellationToken);
+                }
+
+                return drawsEnvelope;
             }
         }
     }
